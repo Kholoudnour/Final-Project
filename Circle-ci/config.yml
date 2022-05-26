@@ -1,31 +1,32 @@
-version: 2.1
+version: '2.1'
 orbs:
-  aws-ecr: circleci/aws-ecr@0.0.2
-  aws-ecs: circleci/aws-ecs@0.0.10
+  aws-ecr: circleci/aws-ecr@x.y
 workflows:
-  build-and-deploy:
+  build_and_push_image:
     jobs:
-      - aws-ecr/build_and_push_image:
-          account-url: "${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_DEFAULT_REGION}.amazonaws.com"
-          repo: "${AWS_RESOURCE_NAME_PREFIX}"
-          region: ${AWS_DEFAULT_REGION}
-          tag: "${CIRCLE_SHA1}"
-      - aws-ecs/deploy-service-update:
-          requires:
-            - aws-ecr/build_and_push_image
-          aws-region: ${AWS_DEFAULT_REGION}
-          family: "${AWS_RESOURCE_NAME_PREFIX}-service"
-          cluster-name: "${AWS_RESOURCE_NAME_PREFIX}-cluster"
-          container-image-name-updates: "container=${AWS_RESOURCE_NAME_PREFIX}-service,image-and-tag=${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_DEFAULT_REGION}.amazonaws.com/${AWS_RESOURCE_NAME_PREFIX}:${CIRCLE_SHA1}"
-          verify-revision-is-deployed: true
-          post-steps:
-            - run:
-                name: Test the deployment
-                command: |
-                  TARGET_GROUP_ARN=$(aws ecs describe-services --cluster ${AWS_RESOURCE_NAME_PREFIX}-cluster --services ${AWS_RESOURCE_NAME_PREFIX}-service | jq -r '.services[0].loadBalancers[0].targetGroupArn')
-                  ELB_ARN=$(aws elbv2 describe-target-groups --target-group-arns $TARGET_GROUP_ARN | jq -r '.TargetGroups[0].LoadBalancerArns[0]')
-                  ELB_DNS_NAME=$(aws elbv2 describe-load-balancers --load-balancer-arns $ELB_ARN | jq -r '.LoadBalancers[0].DNSName')
-                  curl -s --retry 10 http://$ELB_DNS_NAME | grep "Welcome to nginx!"
+      - aws-ecr/build-and-push-image:
+          aws-access-key-id: ACCESS_KEY_ID_ENV_VAR_NAME
+          aws-cli-version: latest
+          aws-secret-access-key: SECRET_ACCESS_KEY_ENV_VAR_NAME
+          context: myContext
+          create-repo: true
+          dockerfile: myDockerfile
+          executor: aws-ecr/default
+          extra-build-args: '--compress'
+          new-profile-name: newProfileName
+          no-output-timeout: 20m
+          path: pathToMyDockerfile
+          platform: linux/amd64
+          profile-name: myProfileName
+          public-registry: false
+          push-image: true
+          region: AWS_REGION
+          registry-id: AWS_ECR_REGISTRY_ID
+          repo: myECRRepository
+          repo-scan-on-push: true
+          role-arn: 'arn:aws:iam::123456789012:role/testing'
+          skip-when-tags-exist: false
+          source-profile: sourceProfileName
+          tag: 'latest,myECRRepoTag'
 
 
-          
