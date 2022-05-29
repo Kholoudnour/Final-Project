@@ -9,7 +9,7 @@ jobs:
       - run:
           name: build docker image
           commands: |
-            docker build --tag=latest:${CIRCLE_BUILD_NUM}
+            docker build --tag=latest:${CIRCLE_BUILD_NUM} .
             docker images
            
         
