@@ -19,9 +19,9 @@
 [ ] connect the project to AWS RDS Server
 [ ] write the app dockerfile
 [ ] push the image to ECR
+[ ] building and pushing the image using CircleCI
 
-
-[ ] building and pushing the image using CircleCI![RDS](https://user-images.githubusercontent.com/101273180/171039961-8cb85af2-943c-4b26-b968-ef3e85b8e4ee.png)
+![RDS](https://user-images.githubusercontent.com/101273180/171039961-8cb85af2-943c-4b26-b968-ef3e85b8e4ee.png)
 
 ![DPdeaver](https://user-images.githubusercontent.com/101273180/171040138-80e4a2ca-2ce2-4e5d-9f3c-8f797d4e82b3.png)
 
